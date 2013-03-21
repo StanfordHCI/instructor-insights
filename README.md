@@ -8,7 +8,7 @@ These scripts (will soon be) a collection of tools that help instructor answers 
 Current Capabilities
 --------------------
 
-Right now, the script produces three graphs. Here are sample graphs from the first three assignments of the HCI class. 
+Right now, the script produces three graphs that show self-staff agreement, self-peer agreement, and self-peer correlation. Here are [sample graphs](https://github.com/StanfordHCI/instructor-insights/tree/master/output) from the HCI class. 
 
 How do I get these charts for my own class?
 ----
