@@ -7,34 +7,36 @@
 
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-# THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE Stanford HCI Group "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE Stanford HCI Group OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+cat("BSD Licensed\n\n\n\n\n")
 
+cat("This script will analyze your student submission data and produce \n agreeement and correlation graphs in the 'output' folder.\n")
 library(plyr)
 library(ggplot2)
 
 #The standard ggplot themes don't look so good, so add our own.
-bland_graph = opts(panel.background = theme_rect(fill = "transparent",colour = NA), # or theme_blank()
-                      panel.grid.minor = theme_blank(), 
-                      panel.grid.major = theme_blank(),
-                      plot.background = theme_rect(fill = "transparent",colour = NA), 
-                   axis.text.x = theme_text(colour="white", size=14), 
-                   axis.text.y = theme_text(colour="white", size=16), 
-                   axis.title.x= theme_text(colour="white", size=16),
-                   legend.text= theme_text(colour="white", size=16),
-                   axis.title.y= theme_text(colour="white", size=16, angle=90),
+bland_graph = theme(panel.background = element_rect(fill = "transparent",colour = NA), # or element_blank()
+                      panel.grid.minor = element_blank(), 
+                      panel.grid.major = element_blank(),
+                      plot.background = element_rect(fill = "transparent",colour = NA), 
+                   axis.text.x = element_text(colour="white", size=14), 
+                   axis.text.y = element_text(colour="white", size=16), 
+                   axis.title.x= element_text(colour="white", size=16),
+                   legend.text= element_text(colour="white", size=16),
+                   axis.title.y= element_text(colour="white", size=16, angle=90),
                    legend.position = c(0.85,0.7))
 
-bland_graph_black = opts(panel.background = theme_rect(fill = "transparent",colour = NA), # or theme_blank()
-                      panel.grid.minor = theme_blank(), 
-                      panel.grid.major = theme_blank(),
-                      plot.background = theme_rect(fill = "transparent",colour = NA), 
-                      axis.text.x = theme_text(colour="black", size=14), 
-                      axis.text.y = theme_text(colour="black", size=16), 
-                      axis.title.x= theme_text(colour="black", size=16),
-                      legend.text= theme_text(colour="black", size=16),
-                      axis.title.y= theme_text(colour="black", size=16, angle=90),
+bland_graph_black = theme(panel.background = element_rect(fill = "transparent",colour = NA), # or element_blank()
+                      panel.grid.minor = element_blank(), 
+                      panel.grid.major = element_blank(),
+                      plot.background = element_rect(fill = "transparent",colour = NA), 
+                      axis.text.x = element_text(colour="black", size=14), 
+                      axis.text.y = element_text(colour="black", size=16), 
+                      axis.title.x= element_text(colour="black", size=16),
+                      legend.text= element_text(colour="black", size=16),
+                      axis.title.y= element_text(colour="black", size=16, angle=90),
                       legend.position = c(0.85,0.7))
 
 
@@ -137,24 +139,23 @@ list.dirs <- function(path=".", pattern=NULL, all.dirs=FALSE,
 }
 
 generateReports <- function() {
-  #Generate the staff self agreement chart
-  cat("What folder are all the assignments in? (default: ", getwd(), "): ")
-  folder <- commandArgs(trailingOnly=T)
+  #This code is commented because it is not cross-platform
+  # cat("What folder are all the assignments in? (default: ", getwd(), "): ")
+  # folder <- commandArgs(trailingOnly=T)
 
-  folder <- folder[1]
+  # folder <- folder[1]
 
-  if(is.na(folder)) {
+  # if(is.na(folder)) {
     
-    folder = getwd()
-  }
-  else {
-    folder <- file.path(getwd(), folder)
-  }
+  #   folder = getwd()
+  # }
+  # else {
+  #   folder <- file.path(getwd(), folder)
+  # }
 
-
+  folder <- getwd()
   cat("Using folder:", folder, "\n")
   dirs = list.dirs(path=folder)
-  cat(dirs)
   #consider each folder you find as an assignment
   
   evaluations_samples <- NULL; submissions <- NULL
@@ -171,7 +172,6 @@ generateReports <- function() {
   #Annotate each assignment with min max grade, and difference in grades
   submissions <- annotateGradesSelfPeer(submissions)
   evaluations_samples <- annotateSamples(evaluations_samples)
-  View(evaluations_samples)
   submissions_summary <- ddply(submissions, c("assignmentNumber", "max_grade","peer_grade","self_grade"), summarise,
         count=length(max_grade))
   #Generate the peer self agreement chart
@@ -183,7 +183,7 @@ generateReports <- function() {
   ggsave("output/peer_self_correlation_histogram.pdf", plot=g.peer_self_correlation, width=8, height=4)
   #Generate the peer self correlation chart
   g.peer_self_correlation_scatter <- ggplot(data=submissions_summary, aes(x=self_grade/max_grade*100, y = peer_grade/max_grade*100)) + geom_point(aes(size=count/sum(count)*100)) + 
-    bland_graph_black + opts(legend.position = c(0.8,0.1)) +
+    bland_graph_black + theme(legend.position = c(0.8,0.1)) +
     scale_size(name="Percentage of submissions") +
     xlab("Self grade (%)") +
     ylab("Peer grade (%) ") +labs(title="Self and peer grade correlation")

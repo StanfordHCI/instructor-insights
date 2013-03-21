@@ -3,5 +3,6 @@
 
 # Example code in package build process
 *-Ex.R
-asgn*/
+asgn*/*
+output/*
 .DS_Store
