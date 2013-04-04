@@ -14,7 +14,7 @@ cat("BSD Licensed\n\n\n\n\n")
 
 cat("This script will analyze your student submission data and produce \n agreeement and correlation graphs in the 'output' folder.\n")
 
-install.packages(c("plyr","ggplot2"))
+install.packages(c("plyr","ggplot2"), repos="http://cran.us.r-project.org")
 library(plyr)
 library(ggplot2)
 
